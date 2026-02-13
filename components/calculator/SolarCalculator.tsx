@@ -1,82 +1,127 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import ProgressBar from "./ProgressBar";
-import WelcomeStep from "./steps/WelcomeStep";
-import ElectricityBillStep from "./steps/ElectricityBillStep";
-import LocationStep from "./steps/LocationStep";
-import ResultsStep from "./steps/ResultsStep";
-import { CalculatorFormData } from "@/lib/types";
-import { calculateSolarSavings } from "@/lib/calculations";
+import { useState, useMemo, useRef } from "react";
+import { Printer, RotateCcw, Share2, Sun } from "lucide-react";
+import { CalculatorInputs } from "@/lib/types";
+import { calculateResults } from "@/lib/calculations";
+import InputsSection from "./InputsSection";
+import SummaryCards from "./SummaryCards";
+import CostChart from "./CostChart";
+import BreakdownTable from "./BreakdownTable";
+
+const DEFAULT_INPUTS: CalculatorInputs = {
+  customerName: "",
+  annualKwhUsage: 10000,
+  utilityRate: 0.15,
+  utilityInflationRate: 6,
+  monthlyConnectionFee: 0,
+  calculateBy: "kwhRate",
+  servicePrice: 0.1,
+  annualSystemProduction: 10000,
+  annualServiceEscalator: 2.9,
+};
 
 export default function SolarCalculator() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [formData, setFormData] = useState<CalculatorFormData>({
-    monthlyBill: 200,
-    state: "",
-  });
+  const [inputs, setInputs] = useState<CalculatorInputs>(DEFAULT_INPUTS);
+  const printRef = useRef<HTMLDivElement>(null);
 
-  const result = useMemo(() => {
-    if (currentStep === 3 && formData.state) {
-      return calculateSolarSavings({
-        monthlyBill: formData.monthlyBill,
-        state: formData.state,
-      });
+  const result = useMemo(() => calculateResults(inputs), [inputs]);
+
+  const updateInput = <K extends keyof CalculatorInputs>(
+    key: K,
+    value: CalculatorInputs[K]
+  ) => {
+    setInputs((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleReset = () => setInputs(DEFAULT_INPUTS);
+
+  const handlePrint = () => window.print();
+
+  const handleShare = async () => {
+    const params = new URLSearchParams();
+    params.set("kwh", inputs.annualKwhUsage.toString());
+    params.set("rate", inputs.utilityRate.toString());
+    params.set("inf", inputs.utilityInflationRate.toString());
+    params.set("fee", inputs.monthlyConnectionFee.toString());
+    params.set("by", inputs.calculateBy);
+    params.set("sp", inputs.servicePrice.toString());
+    params.set("prod", inputs.annualSystemProduction.toString());
+    params.set("esc", inputs.annualServiceEscalator.toString());
+    if (inputs.customerName) params.set("name", inputs.customerName);
+
+    const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+
+    try {
+      await navigator.clipboard.writeText(url);
+      alert("Link copied to clipboard!");
+    } catch {
+      prompt("Copy this link:", url);
     }
-    return null;
-  }, [currentStep, formData.monthlyBill, formData.state]);
-
-  const goNext = () => setCurrentStep((s) => Math.min(s + 1, 3));
-  const goBack = () => setCurrentStep((s) => Math.max(s - 1, 0));
-  const restart = () => {
-    setCurrentStep(0);
-    setFormData({ monthlyBill: 200, state: "" });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 sm:py-12">
-      <div className="w-full max-w-2xl">
-        {/* Progress bar - hidden on welcome and results */}
-        {currentStep > 0 && currentStep < 3 && (
-          <ProgressBar currentStep={currentStep} />
-        )}
+    <div className="min-h-screen" ref={printRef}>
+      {/* Header */}
+      <header className="border-b border-[var(--color-input-border)] no-print">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-[var(--color-primary)] flex items-center justify-center">
+              <Sun className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-white">
+                Solar Savings Calculator
+              </h1>
+              <p className="text-sm text-[var(--color-grey)]">
+                Compare utility costs vs. solar service plan over 25 years
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-card)] text-[var(--color-grey)] hover:text-white hover:bg-[var(--color-card-alt)] transition-colors text-sm"
+            >
+              <Printer className="w-4 h-4" />
+              <span className="hidden sm:inline">Print / PDF</span>
+            </button>
+          </div>
+        </div>
+      </header>
 
-        {/* Card */}
-        <div className="bg-white rounded-2xl shadow-xl shadow-black/5 p-6 sm:p-10">
-          {currentStep === 0 && <WelcomeStep onStart={goNext} />}
+      {/* Main content */}
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+        {/* Inputs */}
+        <InputsSection inputs={inputs} updateInput={updateInput} />
 
-          {currentStep === 1 && (
-            <ElectricityBillStep
-              value={formData.monthlyBill}
-              onChange={(v) =>
-                setFormData((prev) => ({ ...prev, monthlyBill: v }))
-              }
-              onBack={goBack}
-              onNext={goNext}
-            />
-          )}
-
-          {currentStep === 2 && (
-            <LocationStep
-              value={formData.state}
-              onChange={(v) =>
-                setFormData((prev) => ({ ...prev, state: v }))
-              }
-              onBack={goBack}
-              onNext={goNext}
-            />
-          )}
-
-          {currentStep === 3 && result && (
-            <ResultsStep result={result} onRestart={restart} />
-          )}
+        {/* Actions */}
+        <div className="flex gap-3 no-print">
+          <button
+            onClick={handleReset}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--color-card)] text-[var(--color-grey)] hover:text-white hover:bg-[var(--color-card-alt)] transition-colors text-sm"
+          >
+            <RotateCcw className="w-4 h-4" />
+            Reset
+          </button>
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] transition-colors text-sm font-medium"
+          >
+            <Share2 className="w-4 h-4" />
+            Share
+          </button>
         </div>
 
-        {/* Footer */}
-        <p className="text-center text-sm text-[var(--color-grey)] mt-6">
-          Results are estimates and may vary based on specific conditions.
-        </p>
-      </div>
+        {/* Summary */}
+        <SummaryCards result={result} />
+
+        {/* Chart */}
+        <CostChart yearData={result.yearData} />
+
+        {/* Table */}
+        <BreakdownTable yearData={result.yearData} />
+      </main>
     </div>
   );
 }

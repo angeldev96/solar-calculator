@@ -20,8 +20,19 @@
   --color-grey-dark: #65776D;
   --color-text-secondary: #44474B;
 
-  --background: #F8F5EE;
-  --foreground: #1F2723;
+  /* Card colors */
+  --color-card: #2A3631;
+  --color-card-alt: #324039;
+  --color-input-bg: #3A4A43;
+  --color-input-border: #4A5E55;
+  --color-gold: #C8A951;
+  --color-gold-bg: rgba(200, 169, 81, 0.15);
+  --color-teal: #4ECDC4;
+  --color-teal-bg: rgba(78, 205, 196, 0.15);
+  --color-red: #F9593B;
+
+  --background: #1F2723;
+  --foreground: #E8EDE9;
 }
 
 @theme inline {
@@ -40,6 +51,15 @@
   --color-grey: var(--color-grey);
   --color-grey-dark: var(--color-grey-dark);
   --color-text-secondary: var(--color-text-secondary);
+  --color-card: var(--color-card);
+  --color-card-alt: var(--color-card-alt);
+  --color-input-bg: var(--color-input-bg);
+  --color-input-border: var(--color-input-border);
+  --color-gold: var(--color-gold);
+  --color-gold-bg: var(--color-gold-bg);
+  --color-teal: var(--color-teal);
+  --color-teal-bg: var(--color-teal-bg);
+  --color-red: var(--color-red);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -50,49 +70,23 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Custom range slider */
-input[type="range"] {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 100%;
-  height: 8px;
-  border-radius: 4px;
-  background: var(--color-green-light);
-  outline: none;
-}
-
-input[type="range"]::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--color-primary);
-  cursor: pointer;
-  box-shadow: 0 2px 6px rgba(249, 89, 59, 0.4);
-  transition: transform 0.15s ease;
-}
-
-input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.15);
-}
-
-input[type="range"]::-moz-range-thumb {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  background: var(--color-primary);
-  cursor: pointer;
-  border: none;
-  box-shadow: 0 2px 6px rgba(249, 89, 59, 0.4);
-}
-
-/* Custom select */
+/* Custom select arrow for dark theme */
 select {
   -webkit-appearance: none;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2365776D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23A7B1B0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
-  background-size: 20px;
+  background-size: 16px;
+}
+
+/* Print styles */
+@media print {
+  body {
+    background: white !important;
+    color: black !important;
+  }
+  .no-print {
+    display: none !important;
+  }
 }
