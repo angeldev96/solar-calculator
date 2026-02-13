@@ -1,38 +1,38 @@
 @import "tailwindcss";
 
 :root {
-  /* Palmetto Color Palette */
+  /* Palmetto Light Theme */
   --color-primary: #F9593B;
   --color-primary-hover: #DF3A1C;
   --color-primary-light: #FEF4F2;
 
   --color-dark: #1F2723;
   --color-dark-medium: #28332D;
-  --color-dark-soft: #313E37;
+  --color-dark-soft: #4A5951;
 
   --color-green-light: #ECF0E4;
-  --color-green-lightest: #FAFFF0;
+  --color-green-lightest: #F5F7F2;
 
   --color-earth: #F8F5EE;
   --color-earth-light: #FBFBF7;
 
-  --color-grey: #A7B1B0;
+  --color-grey: #8A9490;
   --color-grey-dark: #65776D;
-  --color-text-secondary: #44474B;
+  --color-text-secondary: #5A6B63;
 
-  /* Card colors */
-  --color-card: #2A3631;
-  --color-card-alt: #324039;
-  --color-input-bg: #3A4A43;
-  --color-input-border: #4A5E55;
-  --color-gold: #C8A951;
-  --color-gold-bg: rgba(200, 169, 81, 0.15);
-  --color-teal: #4ECDC4;
-  --color-teal-bg: rgba(78, 205, 196, 0.15);
-  --color-red: #F9593B;
+  /* Card & input colors - light theme */
+  --color-card: #FFFFFF;
+  --color-card-alt: #F8F5EE;
+  --color-input-bg: #F3F5F4;
+  --color-input-border: #D1D8D4;
+  --color-gold: #A07D1C;
+  --color-gold-bg: rgba(160, 125, 28, 0.08);
+  --color-teal: #0D7377;
+  --color-teal-bg: rgba(13, 115, 119, 0.07);
+  --color-red: #D9432A;
 
-  --background: #1F2723;
-  --foreground: #E8EDE9;
+  --background: #ECF0E4;
+  --foreground: #1F2723;
 }
 
 @theme inline {
@@ -70,11 +70,11 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-/* Custom select arrow for dark theme */
+/* Custom select arrow */
 select {
   -webkit-appearance: none;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23A7B1B0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2365776D' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   background-size: 16px;
@@ -82,10 +82,6 @@ select {
 
 /* Print styles */
 @media print {
-  body {
-    background: white !important;
-    color: black !important;
-  }
   .no-print {
     display: none !important;
   }

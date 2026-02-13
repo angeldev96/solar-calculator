@@ -10,7 +10,7 @@ interface SummaryCardsProps {
 export default function SummaryCards({ result }: SummaryCardsProps) {
   return (
     <div>
-      <h2 className="text-lg font-semibold text-white mb-4">Summary</h2>
+      <h2 className="text-lg font-semibold text-[var(--color-dark)] mb-4">Summary</h2>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {/* Row 1 */}
         <SummaryCard
@@ -74,7 +74,7 @@ function SummaryCard({
       ? "text-[var(--color-gold)]"
       : variant === "teal"
       ? "text-[var(--color-teal)]"
-      : "text-white";
+      : "text-[var(--color-dark)]";
 
   return (
     <div className={`rounded-xl p-5 border ${bgClass}`}>

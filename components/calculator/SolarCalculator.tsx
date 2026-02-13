@@ -3,11 +3,12 @@
 import { useState, useMemo, useRef } from "react";
 import { Printer, RotateCcw, Share2, Sun } from "lucide-react";
 import { CalculatorInputs } from "@/lib/types";
-import { calculateResults } from "@/lib/calculations";
+import { calculateResults, calculateSunkCost } from "@/lib/calculations";
 import InputsSection from "./InputsSection";
 import SummaryCards from "./SummaryCards";
 import CostChart from "./CostChart";
 import BreakdownTable from "./BreakdownTable";
+import SunkCostSection from "./SunkCostSection";
 
 const DEFAULT_INPUTS: CalculatorInputs = {
   customerName: "",
@@ -19,6 +20,8 @@ const DEFAULT_INPUTS: CalculatorInputs = {
   servicePrice: 0.1,
   annualSystemProduction: 10000,
   annualServiceEscalator: 2.9,
+  currentMonthlyBill: 200,
+  yearMovedIn: 2010,
 };
 
 export default function SolarCalculator() {
@@ -26,6 +29,10 @@ export default function SolarCalculator() {
   const printRef = useRef<HTMLDivElement>(null);
 
   const result = useMemo(() => calculateResults(inputs), [inputs]);
+  const sunkCostResult = useMemo(
+    () => calculateSunkCost(inputs.currentMonthlyBill, inputs.yearMovedIn),
+    [inputs.currentMonthlyBill, inputs.yearMovedIn]
+  );
 
   const updateInput = <K extends keyof CalculatorInputs>(
     key: K,
@@ -48,6 +55,8 @@ export default function SolarCalculator() {
     params.set("sp", inputs.servicePrice.toString());
     params.set("prod", inputs.annualSystemProduction.toString());
     params.set("esc", inputs.annualServiceEscalator.toString());
+    params.set("bill", inputs.currentMonthlyBill.toString());
+    params.set("yr", inputs.yearMovedIn.toString());
     if (inputs.customerName) params.set("name", inputs.customerName);
 
     const url = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
@@ -70,7 +79,7 @@ export default function SolarCalculator() {
               <Sun className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-white">
+              <h1 className="text-xl font-bold text-[var(--color-dark)]">
                 Solar Savings Calculator
               </h1>
               <p className="text-sm text-[var(--color-grey)]">
@@ -81,7 +90,7 @@ export default function SolarCalculator() {
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-card)] text-[var(--color-grey)] hover:text-white hover:bg-[var(--color-card-alt)] transition-colors text-sm"
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[var(--color-card)] text-[var(--color-grey)] hover:text-[var(--color-dark)] hover:bg-[var(--color-card-alt)] transition-colors text-sm"
             >
               <Printer className="w-4 h-4" />
               <span className="hidden sm:inline">Print / PDF</span>
@@ -99,7 +108,7 @@ export default function SolarCalculator() {
         <div className="flex gap-3 no-print">
           <button
             onClick={handleReset}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--color-card)] text-[var(--color-grey)] hover:text-white hover:bg-[var(--color-card-alt)] transition-colors text-sm"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--color-card)] text-[var(--color-grey)] hover:text-[var(--color-dark)] hover:bg-[var(--color-card-alt)] transition-colors text-sm"
           >
             <RotateCcw className="w-4 h-4" />
             Reset
@@ -112,6 +121,12 @@ export default function SolarCalculator() {
             Share
           </button>
         </div>
+
+        {/* Sunk Cost */}
+        <SunkCostSection
+          result={sunkCostResult}
+          currentMonthlyBill={inputs.currentMonthlyBill}
+        />
 
         {/* Summary */}
         <SummaryCards result={result} />

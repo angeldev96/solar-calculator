@@ -10,6 +10,25 @@ export interface CalculatorInputs {
   servicePrice: number;
   annualSystemProduction: number;
   annualServiceEscalator: number;
+  // Sunk cost
+  currentMonthlyBill: number;
+  yearMovedIn: number;
+}
+
+export interface SunkCostYearData {
+  year: number;
+  estimatedRate: number;
+  monthlyBill: number;
+  annualCost: number;
+  cumulativeCost: number;
+}
+
+export interface SunkCostResult {
+  yearData: SunkCostYearData[];
+  firstMonthlyBill: number;
+  totalPaidToDate: number;
+  yearsInHome: number;
+  averageAnnualCost: number;
 }
 
 export interface YearData {

@@ -15,7 +15,7 @@ export default function BreakdownTable({ yearData }: BreakdownTableProps) {
 
   return (
     <div className="bg-[var(--color-card)] rounded-xl p-6 sm:p-8">
-      <h2 className="text-lg font-semibold text-white mb-2">
+      <h2 className="text-lg font-semibold text-[var(--color-dark)] mb-2">
         Year-by-Year Breakdown
       </h2>
 
@@ -74,7 +74,7 @@ export default function BreakdownTable({ yearData }: BreakdownTableProps) {
                   key={row.year}
                   className={`border-b border-[var(--color-input-border)]/50 ${rowBg}`}
                 >
-                  <td className="py-2.5 px-3 font-medium text-white">
+                  <td className="py-2.5 px-3 font-medium text-[var(--color-dark)]">
                     {row.year}
                   </td>
                   <td className="py-2.5 px-3 text-right text-[var(--color-red)]">

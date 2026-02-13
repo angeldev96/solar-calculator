@@ -1,6 +1,7 @@
 "use client";
 
 import { CalculatorInputs } from "@/lib/types";
+import { getMoveInYears } from "@/lib/historical-rates";
 
 interface InputsSectionProps {
   inputs: CalculatorInputs;
@@ -17,9 +18,9 @@ export default function InputsSection({
   return (
     <div className="bg-[var(--color-card)] rounded-xl p-6 sm:p-8">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-lg font-semibold text-white">Calculator Inputs</h2>
+        <h2 className="text-lg font-semibold text-[var(--color-dark)]">Calculator Inputs</h2>
         <span className="text-sm text-[var(--color-grey)]">
-          Projection term: <span className="text-white font-medium">25 years</span>
+          Projection term: <span className="text-[var(--color-dark)] font-medium">25 years</span>
         </span>
       </div>
 
@@ -33,8 +34,47 @@ export default function InputsSection({
           value={inputs.customerName}
           onChange={(e) => updateInput("customerName", e.target.value)}
           placeholder="Enter customer name"
-          className="w-full sm:w-80 px-4 py-2.5 rounded-lg bg-[var(--color-input-bg)] border border-[var(--color-input-border)] text-white placeholder-[var(--color-grey-dark)] outline-none focus:border-[var(--color-primary)] transition-colors"
+          className="w-full sm:w-80 px-4 py-2.5 rounded-lg bg-[var(--color-input-bg)] border border-[var(--color-input-border)] text-[var(--color-dark)] placeholder-[var(--color-grey-dark)] outline-none focus:border-[var(--color-primary)] transition-colors"
         />
+      </div>
+
+      {/* Sunk Cost Inputs */}
+      <div className="mb-8 p-5 rounded-lg bg-[var(--color-card-alt)] border border-[var(--color-input-border)]">
+        <h3 className="text-sm font-semibold text-[var(--color-primary)] uppercase tracking-wider mb-4">
+          Sunk Cost Analysis
+        </h3>
+        <p className="text-xs text-[var(--color-grey-dark)] mb-4">
+          Enter your current bill and move-in year to see how much you&apos;ve already paid to the utility.
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+          <InputField
+            label="Current Monthly Electric Bill"
+            value={inputs.currentMonthlyBill}
+            onChange={(v) => updateInput("currentMonthlyBill", v)}
+            prefix="$"
+            step={10}
+            hint="Your current monthly electricity bill"
+          />
+          <div>
+            <label className="block text-sm text-[var(--color-grey)] mb-1.5">
+              Year Moved Into Home
+            </label>
+            <select
+              value={inputs.yearMovedIn}
+              onChange={(e) => updateInput("yearMovedIn", Number(e.target.value))}
+              className="w-full py-2.5 px-4 rounded-lg bg-[var(--color-input-bg)] border border-[var(--color-input-border)] text-[var(--color-dark)] outline-none focus:border-[var(--color-primary)] transition-colors cursor-pointer"
+            >
+              {getMoveInYears().map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
+              ))}
+            </select>
+            <p className="text-xs text-[var(--color-grey-dark)] mt-1">
+              When you first started paying utilities at this home
+            </p>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -94,7 +134,7 @@ export default function InputsSection({
                   className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                     inputs.calculateBy === "kwhRate"
                       ? "bg-[var(--color-primary)] text-white"
-                      : "text-[var(--color-grey)] hover:text-white"
+                      : "text-[var(--color-grey)] hover:text-[var(--color-dark)]"
                   }`}
                 >
                   kWh Rate
@@ -104,7 +144,7 @@ export default function InputsSection({
                   className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
                     inputs.calculateBy === "monthlyPrice"
                       ? "bg-[var(--color-primary)] text-white"
-                      : "text-[var(--color-grey)] hover:text-white"
+                      : "text-[var(--color-grey)] hover:text-[var(--color-dark)]"
                   }`}
                 >
                   Monthly Price
@@ -152,7 +192,6 @@ function InputField({
   onChange,
   prefix,
   suffix,
-  step = 1,
   hint,
 }: {
   label: string;
@@ -163,6 +202,18 @@ function InputField({
   step?: number;
   hint?: string;
 }) {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    // Allow empty, digits, decimal point, and minus
+    if (raw === "" || raw === "-" || raw === ".") {
+      if (raw === "") onChange(0);
+      return;
+    }
+    if (/^-?\d*\.?\d*$/.test(raw)) {
+      onChange(Number(raw));
+    }
+  };
+
   return (
     <div>
       <label className="block text-sm text-[var(--color-grey)] mb-1.5">
@@ -175,11 +226,11 @@ function InputField({
           </span>
         )}
         <input
-          type="number"
+          type="text"
+          inputMode="decimal"
           value={value}
-          onChange={(e) => onChange(Number(e.target.value))}
-          step={step}
-          className={`w-full py-2.5 rounded-lg bg-[var(--color-input-bg)] border border-[var(--color-input-border)] text-white outline-none focus:border-[var(--color-primary)] transition-colors ${
+          onChange={handleChange}
+          className={`w-full py-2.5 rounded-lg bg-[var(--color-input-bg)] border border-[var(--color-input-border)] text-[var(--color-dark)] outline-none focus:border-[var(--color-primary)] transition-colors ${
             prefix ? "pl-8 pr-4" : "px-4"
           } ${suffix ? "pr-14" : ""}`}
         />
