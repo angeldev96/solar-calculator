@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { CalculatorInputs } from "@/lib/types";
 import { getMoveInYears } from "@/lib/historical-rates";
 
@@ -202,15 +203,43 @@ function InputField({
   step?: number;
   hint?: string;
 }) {
+  // Keep a local string state for the input to preserve intermediate typing states like "0." or "123."
+  const [displayValue, setDisplayValue] = useState(String(value));
+
+  // Sync with parent value changes
+  useEffect(() => {
+    setDisplayValue(String(value));
+  }, [value]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
-    // Allow empty, digits, decimal point, and minus
-    if (raw === "" || raw === "-" || raw === ".") {
-      if (raw === "") onChange(0);
+
+    // Allow empty string
+    if (raw === "") {
+      setDisplayValue("");
+      onChange(0);
       return;
     }
+
+    // Only allow valid number patterns (numbers, decimals, negative)
     if (/^-?\d*\.?\d*$/.test(raw)) {
-      onChange(Number(raw));
+      setDisplayValue(raw);
+
+      // Convert to number if it's a complete valid number
+      const num = parseFloat(raw);
+      if (!isNaN(num)) {
+        onChange(num);
+      }
+    }
+  };
+
+  const handleBlur = () => {
+    // On blur, clean up the display value (remove trailing dots, etc.)
+    const num = parseFloat(displayValue);
+    if (!isNaN(num)) {
+      setDisplayValue(String(num));
+    } else {
+      setDisplayValue(String(value));
     }
   };
 
@@ -228,8 +257,9 @@ function InputField({
         <input
           type="text"
           inputMode="decimal"
-          value={value}
+          value={displayValue}
           onChange={handleChange}
+          onBlur={handleBlur}
           className={`w-full py-2.5 rounded-lg bg-[var(--color-input-bg)] border border-[var(--color-input-border)] text-[var(--color-dark)] outline-none focus:border-[var(--color-primary)] transition-colors ${
             prefix ? "pl-8 pr-4" : "px-4"
           } ${suffix ? "pr-14" : ""}`}
