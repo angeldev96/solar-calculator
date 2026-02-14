@@ -8,9 +8,12 @@ interface BreakdownTableProps {
 }
 
 export default function BreakdownTable({ yearData }: BreakdownTableProps) {
-  // Find the crossover year (when cumulative savings turn positive)
+  // Get Year 1 utility monthly cost
+  const year1UtilityMonthly = yearData[0]?.utilityMonthly || 0;
+
+  // Find the crossover year (when service monthly cost reaches Year 1 utility monthly cost)
   const crossoverYear = yearData.find(
-    (d) => d.cumulativeSavings > 0 && d.year > 1
+    (d) => d.serviceMonthly >= year1UtilityMonthly && d.year > 1
   )?.year;
 
   return (
@@ -23,8 +26,8 @@ export default function BreakdownTable({ yearData }: BreakdownTableProps) {
         <div className="mb-6 p-4 rounded-lg bg-[var(--color-teal-bg)] border border-[var(--color-teal)]/20">
           <p className="text-sm text-[var(--color-teal)]">
             <span className="font-semibold">Year {crossoverYear}</span> is when
-            your solar service cost becomes lower than what you&apos;d pay the
-            utility, based on projected rate increases.
+            your solar service monthly cost ({formatCurrency(yearData.find(d => d.year === crossoverYear)?.serviceMonthly || 0)})
+            reaches your Year 1 utility monthly cost ({formatCurrency(year1UtilityMonthly)}).
           </p>
         </div>
       )}
